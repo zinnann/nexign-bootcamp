@@ -6,6 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import ru.grak.cdr.service.generate.CallDataGeneratorService;
 import ru.grak.common.dto.CallDataRecordDto;
 
 import java.util.concurrent.ThreadLocalRandom;

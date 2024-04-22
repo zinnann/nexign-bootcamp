@@ -1,4 +1,4 @@
-package ru.grak.brt.service;
+package ru.grak.brt.service.billing;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class SubscriptionsFeeService {
     }
 
     private BigDecimal getTariffSubscriptionsFee(Client client){
-        TypeTariff tariff_id = client.getTariff_id();
+        TypeTariff tariff_id = client.getTariff();
         return tariffRepository.findById(tariff_id).get()
                 .getSubscriptionFee();
     }

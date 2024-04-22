@@ -1,15 +1,14 @@
-package ru.grak.cdr.service;
+package ru.grak.cdr.service.generate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.entity.Transaction;
 import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.enums.TypeCall;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static ru.grak.cdr.service.DataGeneratorService.generateRandomCallDuration;
-import static ru.grak.cdr.service.DataGeneratorService.generateRandomDateTime;
+import static ru.grak.cdr.service.generate.DataGeneratorService.generateRandomCallDuration;
+import static ru.grak.cdr.service.generate.DataGeneratorService.generateRandomDateTime;
 
 @Service
 @RequiredArgsConstructor

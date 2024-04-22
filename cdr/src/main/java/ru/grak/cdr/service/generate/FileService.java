@@ -1,4 +1,4 @@
-package ru.grak.cdr.service;
+package ru.grak.cdr.service.generate;
 
 import org.springframework.stereotype.Service;
 import ru.grak.common.dto.CallDataRecordDto;

@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Tariff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private TypeTariff tariff_id;
+    private TypeTariff tariff;
 
     private String name;
     private BigDecimal subscriptionFee;

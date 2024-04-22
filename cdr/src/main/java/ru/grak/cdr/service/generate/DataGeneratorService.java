@@ -1,4 +1,4 @@
-package ru.grak.cdr.service;
+package ru.grak.cdr.service.generate;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;

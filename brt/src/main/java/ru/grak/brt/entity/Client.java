@@ -20,6 +20,6 @@ public class Client {
     private Long id;
 
     private String phoneNumber;
-    private TypeTariff tariff_id;
+    private TypeTariff tariff;
     private BigDecimal balance;
 }

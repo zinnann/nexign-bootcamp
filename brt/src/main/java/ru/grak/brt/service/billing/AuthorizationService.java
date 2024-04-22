@@ -1,4 +1,4 @@
-package ru.grak.brt.service;
+package ru.grak.brt.service.billing;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

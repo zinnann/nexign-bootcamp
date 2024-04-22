@@ -1,5 +1,7 @@
 package ru.grak.common.enums;
 
+import lombok.EqualsAndHashCode;
+
 public enum TypeTariff {
     PER_MINUTE("11"),
     MONTHLY("12");

@@ -1,4 +1,4 @@
-package ru.grak.brt.service;
+package ru.grak.brt.service.billing;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class CdrPlusService {
 
         TypeTariff tariff = clientRepository
                 .findByPhoneNumber(cdr.getMsisdnFirst())
-                .getTariff_id();
+                .getTariff();
 
         return CallDataRecordPlusDto.builder()
                 .typeCall(cdr.getTypeCall())
