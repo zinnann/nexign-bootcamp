@@ -1,7 +1,10 @@
-package ru.grak.cdr.entity;
+package ru.grak.brt.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.grak.common.enums.TypeTariff;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -10,9 +13,13 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Table(name = "clients")
-public class Clients {
+public class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String phoneNumber;
+    private TypeTariff tariff_id;
+    private BigDecimal balance;
 }

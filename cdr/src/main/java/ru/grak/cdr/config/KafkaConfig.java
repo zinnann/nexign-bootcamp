@@ -10,7 +10,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.grak.cdr.entity.CallDataRecord;
+import ru.grak.cdr.entity.Transaction;
+import ru.grak.common.dto.CallDataRecordDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class KafkaConfig {
     private String bootstrapAddress;
 
     @Bean
-    public ProducerFactory<String, CallDataRecord> producerFactory() {
+    public ProducerFactory<String, CallDataRecordDto> producerFactory() {
 
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -33,7 +34,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, CallDataRecord> kafkaTemplate() {
+    public KafkaTemplate<String, CallDataRecordDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

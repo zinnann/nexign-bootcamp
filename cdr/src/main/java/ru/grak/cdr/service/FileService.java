@@ -1,7 +1,7 @@
 package ru.grak.cdr.service;
 
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.entity.CallDataRecord;
+import ru.grak.common.dto.CallDataRecordDto;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,13 +20,13 @@ public class FileService {
 
     private static int counter;
 
-    public void saveCallDataRecords(List<CallDataRecord> chronologicalCdrList) throws IOException, SQLException {
+    public void saveCallDataRecords(List<CallDataRecordDto> chronologicalCdrList) throws IOException, SQLException {
 
         String cdrFileName = CDR_FOLDER_PATH + CDR_FILE_PREFIX + "_" + counter + CDR_FILE_EXTENSION;
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(cdrFileName))) {
 
-            for (CallDataRecord callDataRecord : chronologicalCdrList) {
+            for (CallDataRecordDto callDataRecord : chronologicalCdrList) {
                 writer.println(cdrFormat(callDataRecord));
             }
         }
@@ -34,7 +34,7 @@ public class FileService {
 
 //    public void getCallDataRecords() throws IOException, SQLException {}
 
-    private static String cdrFormat(CallDataRecord dataRecord) {
+    private static String cdrFormat(CallDataRecordDto dataRecord) {
         return dataRecord.getTypeCall().getNumericValueOfType() + ", "
                 + dataRecord.getMsisdnFirst() + ", "
                 + dataRecord.getMsisdnSecond() + ", "

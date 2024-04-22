@@ -3,7 +3,7 @@ package ru.grak.cdr.service;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.service.db.ClientsService;
+import ru.grak.cdr.service.db.AbonentService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class DataGeneratorService {
 
-    private final ClientsService clientsService;
+    private final AbonentService clientsService;
 
     public static int generateRandomCallDuration(int maxCallDurationInMinutes) {
         return ThreadLocalRandom.current().nextInt(maxCallDurationInMinutes * 60) + 1;

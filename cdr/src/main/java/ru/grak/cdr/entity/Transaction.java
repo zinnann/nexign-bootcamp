@@ -2,7 +2,7 @@ package ru.grak.cdr.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.grak.cdr.enums.TypeCall;
+import ru.grak.common.enums.TypeCall;
 
 @Entity
 @Getter
@@ -10,8 +10,8 @@ import ru.grak.cdr.enums.TypeCall;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "cdr")
-public class CallDataRecord {
+@Table(name = "transactions")
+public class Transaction {
 
     @Id
     @Column(name = "id")

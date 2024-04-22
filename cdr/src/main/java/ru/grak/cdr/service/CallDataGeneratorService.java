@@ -2,8 +2,9 @@ package ru.grak.cdr.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.entity.CallDataRecord;
-import ru.grak.cdr.enums.TypeCall;
+import ru.grak.cdr.entity.Transaction;
+import ru.grak.common.dto.CallDataRecordDto;
+import ru.grak.common.enums.TypeCall;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -16,7 +17,7 @@ public class CallDataGeneratorService {
 
     private final DataGeneratorService dataGeneratorService;
 
-    public CallDataRecord generateRandomCdr(int year, int month, int maxCallDuration) {
+    public CallDataRecordDto generateRandomCdr(int year, int month, int maxCallDuration) {
 
         TypeCall typeCall = ThreadLocalRandom.current().nextBoolean()
                 ? TypeCall.OUTGOING
@@ -29,7 +30,7 @@ public class CallDataGeneratorService {
         String firstMsisdn = msisdnPair.a;
         String secondMsisdn = msisdnPair.b;
 
-        return CallDataRecord.builder()
+        return CallDataRecordDto.builder()
                 .typeCall(typeCall)
                 .msisdnFirst(firstMsisdn)
                 .msisdnSecond(secondMsisdn)

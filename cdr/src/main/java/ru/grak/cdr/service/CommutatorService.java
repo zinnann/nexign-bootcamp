@@ -6,7 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.entity.CallDataRecord;
+import ru.grak.common.dto.CallDataRecordDto;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class CommutatorService {
 
-    private final KafkaTemplate<String, CallDataRecord> kafkaTemplate;
+    private final KafkaTemplate<String, CallDataRecordDto> kafkaTemplate;
     private final CallDataGeneratorService recordGeneratorService;
 
     @Value("${cdr.generate.year}")

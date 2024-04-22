@@ -1,4 +1,4 @@
-package ru.grak.cdr.enums;
+package ru.grak.common.enums;
 
 public enum TypeCall {
     OUTGOING("01"),

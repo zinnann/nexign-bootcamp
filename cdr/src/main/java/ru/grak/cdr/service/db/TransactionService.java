@@ -2,7 +2,7 @@ package ru.grak.cdr.service.db;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.entity.CallDataRecord;
+import ru.grak.cdr.entity.Transaction;
 import ru.grak.cdr.repository.TransactionRepository;
 
 @Service
@@ -11,7 +11,8 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
 
-    public void saveTransaction(CallDataRecord callDataRecord){
+    //dto в транзакцию mapper
+    public void saveTransaction(Transaction callDataRecord){
         transactionRepository.save(callDataRecord);
     }
 
