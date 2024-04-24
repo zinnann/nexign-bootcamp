@@ -1,4 +1,4 @@
-package ru.grak.hrs.service.tariff;
+package ru.grak.hrs.tariff;
 
 import ru.grak.common.dto.CallDataRecordPlusDto;
 

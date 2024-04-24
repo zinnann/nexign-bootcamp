@@ -1,6 +1,7 @@
-package ru.grak.hrs.service.tariff;
+package ru.grak.hrs.tariff;
 
 import org.springframework.stereotype.Component;
+import ru.grak.hrs.exception.TariffConversionException;
 
 @Component
 public final class TariffFactory {
@@ -18,7 +19,6 @@ public final class TariffFactory {
             return new MonthlyTariff();
         }
 
-        //create own ex
-        throw new RuntimeException("");
+        throw new TariffConversionException("Tariff type conversion error");
     }
 }

@@ -1,7 +1,6 @@
-package ru.grak.hrs.service.tariff;
+package ru.grak.hrs.tariff;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import ru.grak.common.dto.CallDataRecordPlusDto;
 import ru.grak.common.enums.TypeCall;
 import ru.grak.hrs.entity.Tariff;
@@ -12,7 +11,6 @@ import ru.grak.hrs.service.tariffication.CallDurationService;
 
 import java.math.BigDecimal;
 
-@Component
 public class ClassicTariff implements BaseTariff {
 
     @Autowired

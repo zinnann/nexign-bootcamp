@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.grak.common.dto.CallDataRecordPlusDto;
 import ru.grak.common.enums.TypeTariff;
 import ru.grak.hrs.dto.CallDetailsDto;
-import ru.grak.hrs.service.tariff.TariffFactory;
+import ru.grak.hrs.tariff.TariffFactory;
 
 import java.math.BigDecimal;
 import java.time.Duration;
