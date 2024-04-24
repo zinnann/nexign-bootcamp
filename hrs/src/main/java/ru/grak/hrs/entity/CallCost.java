@@ -1,4 +1,4 @@
-package ru.grak.brt.entity;
+package ru.grak.hrs.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
