@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.grak.common.enums.TypeTariff;
 import ru.grak.crm.dto.AbonentDto;
 import ru.grak.crm.entity.Client;
+import ru.grak.crm.exceptions.AbonentAlreadyExistException;
 import ru.grak.crm.exceptions.ClientNotFoundException;
 import ru.grak.crm.exceptions.TariffNotFoundException;
 import ru.grak.crm.repository.ClientRepository;
@@ -22,7 +23,6 @@ public class ManagerService {
     @Transactional
     @Modifying
     public void changeTariff(String msisdn, String typeTariff) {
-
         var client = clientRepository.findById(msisdn)
                 .orElseThrow(() ->
                         new ClientNotFoundException("Client with msisdn:{0} not found", msisdn));
@@ -37,6 +37,9 @@ public class ManagerService {
 
     @Transactional
     public Client createAbonent(AbonentDto abonentDto) {
+        if (clientRepository.existsByPhoneNumber(abonentDto.getPhoneNumber()))
+            throw new AbonentAlreadyExistException("Abonent with number: {0}", abonentDto.getPhoneNumber());
+
         return clientRepository.save(abonentDto.toEntity());
     }
 }

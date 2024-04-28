@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.grak.crm.dto.PaymentDto;
-import ru.grak.crm.service.UserService;
+import ru.grak.crm.service.ClientService;
 
 import java.math.BigDecimal;
 
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final ClientService userService;
 
     @PatchMapping("/pay")
     public BigDecimal pay(PaymentDto payment) {

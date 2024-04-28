@@ -1,35 +1,53 @@
 package ru.grak.crm.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import ru.grak.crm.dto.PaymentDto;
-import ru.grak.crm.exceptions.ClientNotFoundException;
-import ru.grak.crm.repository.ClientRepository;
+import ru.grak.crm.entity.User;
+import ru.grak.crm.repository.RoleRepository;
+import ru.grak.crm.repository.UserRepository;
 
-import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    private final ClientRepository clientRepository;
 
-    @Transactional
-    @Modifying
-    public BigDecimal pay(PaymentDto payment) {
+//    public User register(User user) {
+//        Role roleUser = roleRepository.findByName("ROLE_USER");
+//        List<Role> userRoles = new ArrayList<>();
+//        userRoles.add(roleUser);
+//
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        user.setRoles(userRoles);
+//
+//        User registeredUser = userRepository.save(user);
+//
+//        return registeredUser;
+//    }
 
-        var client = clientRepository.findById(payment.getMsisdn())
-                .orElseThrow(() ->
-                        new ClientNotFoundException("Client with msisdn:{0} not found", payment.getMsisdn()));
+    public List<User> getAll() {
+        List<User> result = userRepository.findAll();
+        return result;
+    }
 
-        BigDecimal balance = client.getBalance();
-        BigDecimal updatedBalance = balance.add(payment.getDeposit());
-        client.setBalance(updatedBalance);
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 
-        clientRepository.save(client);
+    public User findById(Long id) {
+        User result = userRepository.findById(id).orElse(null);
 
-        return updatedBalance;
+        if (result == null) {
+            return null;
+        }
+        return result;
+    }
+
+    public void delete(Long id) {
+        userRepository.deleteById(id);
     }
 }

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Table(name = "tariff")
 public class Tariff {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Enumerated(EnumType.STRING)
     private TypeTariff tariff;
 
     private String name;
