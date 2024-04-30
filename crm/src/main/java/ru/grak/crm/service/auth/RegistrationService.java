@@ -22,13 +22,13 @@ public class RegistrationService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void registration(RegisterRequest registerRequest) throws RoleNotFoundException {
-        User users = new User(
+        User user = new User(
                 registerRequest.getUsername(),
                 encodePassword(registerRequest));
 
         if (userRepository.findByUsername(registerRequest.getUsername()).isEmpty()) {
-            setUserRole(users);
-            userRepository.save(users);
+            setUserRole(user);
+            userRepository.save(user);
         } else {
             throw new AbonentAlreadyExistException("Abonent with username: " + registerRequest.getUsername()
                     + " already exist");
@@ -39,8 +39,8 @@ public class RegistrationService {
         return bCryptPasswordEncoder.encode(registerRequest.getPassword());
     }
 
-    private void setUserRole(User users) throws RoleNotFoundException {
-        users.setRoles(List.of(
+    private void setUserRole(User user) throws RoleNotFoundException {
+        user.setRoles(List.of(
                 roleRepository.findByName(RoleEnum.USER).orElseThrow(() ->
                         new RoleNotFoundException("Role doesn't exist"))));
     }

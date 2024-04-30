@@ -38,7 +38,7 @@ public class ManagerService {
     @Transactional
     public Client createAbonent(AbonentDto abonentDto) {
         if (clientRepository.existsByPhoneNumber(abonentDto.getPhoneNumber()))
-            throw new AbonentAlreadyExistException("Abonent with number: {0}", abonentDto.getPhoneNumber());
+            throw new AbonentAlreadyExistException("Abonent with number: {0} already exist", abonentDto.getPhoneNumber());
 
         return clientRepository.save(abonentDto.toEntity());
     }

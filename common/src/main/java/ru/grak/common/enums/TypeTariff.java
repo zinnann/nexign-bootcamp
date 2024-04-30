@@ -1,7 +1,5 @@
 package ru.grak.common.enums;
 
-import lombok.EqualsAndHashCode;
-
 public enum TypeTariff {
     PER_MINUTE("11"),
     MONTHLY("12");
@@ -18,9 +16,10 @@ public enum TypeTariff {
 
     public static TypeTariff fromNumericValueOfType(String numericValueOfType) {
 
-        if (numericValueOfType.equals("11")) {
-            return PER_MINUTE;
+        if (numericValueOfType.equals("12")) {
+            return MONTHLY;
         }
-        return MONTHLY;
+
+        return PER_MINUTE;
     }
 }

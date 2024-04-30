@@ -16,13 +16,13 @@ import java.math.BigDecimal;
 public class AbonentDto {
 
     private String phoneNumber;
-    private TypeTariff tariff;
+    private String tariff;
     private BigDecimal balance = BigDecimal.valueOf(100);
 
     public Client toEntity() {
         return Client.builder()
                 .phoneNumber(this.getPhoneNumber())
-                .tariff(this.getTariff())
+                .tariff(TypeTariff.fromNumericValueOfType(this.getTariff()))
                 .balance(this.getBalance())
                 .build();
     }

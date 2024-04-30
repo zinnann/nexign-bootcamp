@@ -8,10 +8,10 @@ import ru.grak.crm.entity.Role;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class JwtResponse {
 
     private Long id;

@@ -1,4 +1,4 @@
-package ru.grak.crm.controllers.auth;
+package ru.grak.crm.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.grak.crm.dto.JwtResponse;
 import ru.grak.crm.dto.LoginRequest;
+import ru.grak.crm.dto.RegisterRequest;
 import ru.grak.crm.service.auth.AuthenticationService;
+import ru.grak.crm.service.auth.RegistrationService;
+
+import javax.management.relation.RoleNotFoundException;
 
 @RestController
 @RequestMapping(value = "api/auth")
@@ -16,10 +20,17 @@ import ru.grak.crm.service.auth.AuthenticationService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final RegistrationService registrationService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authenticationService.login(loginRequest));
+    }
+
+    @PostMapping("/registration")
+    public ResponseEntity<String> registration(@RequestBody RegisterRequest registerRequest) throws RoleNotFoundException {
+        registrationService.registration(registerRequest);
+        return ResponseEntity.ok("Success registration");
     }
 
 }

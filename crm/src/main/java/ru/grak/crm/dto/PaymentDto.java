@@ -15,5 +15,4 @@ public class PaymentDto {
 
     private String msisdn;
     private BigDecimal deposit;
-
 }

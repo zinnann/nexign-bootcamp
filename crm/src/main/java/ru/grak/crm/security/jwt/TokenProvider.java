@@ -1,50 +1,41 @@
 package ru.grak.crm.security.jwt;
 
 import io.jsonwebtoken.*;
-import jakarta.annotation.PostConstruct;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.grak.crm.entity.Role;
+import ru.grak.crm.security.UserDetailsServiceImpl;
 
-import java.util.ArrayList;
-import java.util.Base64;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenProvider {
 
-    @Value("${jwt.token.secret}")
-    private String secret;
+//    @Value("${jwt.token.secret}")
+//    private String secret;
+
+    private final SecretKey jwtSecret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @Value("${jwt.token.expired}")
     private long validityInMilliseconds;
 
-    private final UserDetailsService userDetailsService;
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        return bCryptPasswordEncoder;
-    }
-
-    @PostConstruct
-    protected void init() {
-        secret = Base64.getEncoder().encodeToString(secret.getBytes());
-    }
+    private final UserDetailsServiceImpl userDetailsService;
 
     public String createToken(String username, List<Role> roles) {
 
-        Claims claims = (Claims) Jwts.claims().setSubject(username);
+        Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", getRoleNames(roles));
 
         Date now = new Date();
@@ -54,21 +45,21 @@ public class TokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .signWith(jwtSecret, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
-            return bearerToken.substring(7, bearerToken.length());
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
         return null;
     }
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
 
         } catch (JwtException | IllegalArgumentException e) {
@@ -77,17 +68,13 @@ public class TokenProvider {
     }
 
     public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
     private List<String> getRoleNames(List<Role> userRoles) {
-        List<String> result = new ArrayList<>();
-
-        userRoles.forEach(role -> {
-            result.add(role.getName());
-        });
-
-        return result;
+        return userRoles.stream()
+                .map(role -> role.getName().getAuthority()).collect(Collectors.toList());
     }
 
     public Authentication getAuthentication(String token) {

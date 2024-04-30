@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-public class ClientService {
+public class SubscriberService {
 
     private final ClientRepository clientRepository;
 
@@ -20,9 +20,10 @@ public class ClientService {
     @Modifying
     public BigDecimal pay(PaymentDto payment) {
 
-        var client = clientRepository.findById(payment.getMsisdn())
+        var client = clientRepository.findByPhoneNumber(payment.getMsisdn())
                 .orElseThrow(() ->
                         new ClientNotFoundException("Client with msisdn:{0} not found", payment.getMsisdn()));
+        System.out.println(client);
 
         BigDecimal balance = client.getBalance();
         BigDecimal updatedBalance = balance.add(payment.getDeposit());

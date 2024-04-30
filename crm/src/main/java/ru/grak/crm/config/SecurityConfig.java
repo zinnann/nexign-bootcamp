@@ -20,9 +20,9 @@ import ru.grak.crm.security.jwt.JwtConfigurer;
 @Configuration
 public class SecurityConfig {
 
-    private static final String MANAGER_ENDPOINT = "/api/manager/**";
-    private static final String USER_ENDPOINT = "/api/user/**";
-    private static final String AUTH_ENDPOINT = "/api/auth/**";
+    private static final String MANAGER_ENDPOINT = "api/manager/**";
+    private static final String USER_ENDPOINT = "api/subscriber/**";
+    private static final String AUTH_ENDPOINT = "api/auth/**";
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtConfigurer configurerFilter;
@@ -45,7 +45,6 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**"
     };
-
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -76,8 +75,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(AUTH_ENDPOINT).permitAll()
                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                .requestMatchers(USER_ENDPOINT).hasRole("USER")
-                .requestMatchers(MANAGER_ENDPOINT).hasRole("ADMIN")
+                .requestMatchers(USER_ENDPOINT).hasAuthority("USER")
+                .requestMatchers(MANAGER_ENDPOINT).hasAuthority("ADMIN")
                 .and()
                 .apply(configurerFilter);
 
