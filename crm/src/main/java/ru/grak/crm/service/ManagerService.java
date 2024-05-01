@@ -23,11 +23,11 @@ public class ManagerService {
     @Transactional
     @Modifying
     public void changeTariff(String msisdn, String typeTariff) {
-        var client = clientRepository.findById(msisdn)
+        var client = clientRepository.findByPhoneNumber(msisdn)
                 .orElseThrow(() ->
                         new ClientNotFoundException("Client with msisdn:{0} not found", msisdn));
 
-        var tariff = tariffRepository.findById(TypeTariff.valueOf(typeTariff))
+        var tariff = tariffRepository.findById(TypeTariff.fromNumericValueOfType(typeTariff))
                 .orElseThrow(() ->
                         new TariffNotFoundException("Tariff with id:{0} not found", typeTariff));
 

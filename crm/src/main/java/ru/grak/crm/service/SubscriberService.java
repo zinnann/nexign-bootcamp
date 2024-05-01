@@ -23,7 +23,6 @@ public class SubscriberService {
         var client = clientRepository.findByPhoneNumber(payment.getMsisdn())
                 .orElseThrow(() ->
                         new ClientNotFoundException("Client with msisdn:{0} not found", payment.getMsisdn()));
-        System.out.println(client);
 
         BigDecimal balance = client.getBalance();
         BigDecimal updatedBalance = balance.add(payment.getDeposit());
