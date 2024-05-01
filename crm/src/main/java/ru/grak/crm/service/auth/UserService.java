@@ -1,4 +1,4 @@
-package ru.grak.crm.service;
+package ru.grak.crm.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

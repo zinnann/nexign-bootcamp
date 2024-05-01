@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.grak.crm.entity.User;
 import ru.grak.crm.security.jwt.UserDetailsImplFactory;
-import ru.grak.crm.service.UserService;
+import ru.grak.crm.service.auth.UserService;
 
 @Service
 @RequiredArgsConstructor

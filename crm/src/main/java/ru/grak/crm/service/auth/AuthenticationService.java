@@ -8,7 +8,6 @@ import ru.grak.crm.dto.JwtResponse;
 import ru.grak.crm.dto.LoginRequest;
 import ru.grak.crm.entity.User;
 import ru.grak.crm.security.jwt.TokenProvider;
-import ru.grak.crm.service.UserService;
 
 @Service
 @RequiredArgsConstructor
