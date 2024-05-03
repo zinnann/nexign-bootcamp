@@ -1,6 +1,7 @@
 package ru.grak.crm.controllers.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,13 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ExceptionApiHandler {
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RuntimeException.class)
+    public ErrorMessage onTypeException(RuntimeException e) {
+
+        return new ErrorMessage(e.getMessage());
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
@@ -55,4 +63,6 @@ public class ExceptionApiHandler {
         String errorMessage = "Required parameter '" + paramName + "' is not present";
         return new Violation(paramName, errorMessage);
     }
+
+
 }

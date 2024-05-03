@@ -5,14 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentDto {
+public class ChangeTariffDto {
 
     private String msisdn;
-    private BigDecimal money;
+    private String tariffId;
 }

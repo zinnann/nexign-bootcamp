@@ -15,15 +15,15 @@ import java.math.BigDecimal;
 @Builder
 public class AbonentDto {
 
-    private String phoneNumber;
-    private String tariff;
-    private BigDecimal balance = BigDecimal.valueOf(100);
+    private String msisdn;
+    private String tariffId;
+    private BigDecimal money = BigDecimal.valueOf(100);
 
     public Client toEntity() {
         return Client.builder()
-                .phoneNumber(this.getPhoneNumber())
-                .tariff(TypeTariff.fromNumericValueOfType(this.getTariff()))
-                .balance(this.getBalance())
+                .phoneNumber(this.getMsisdn())
+                .tariff(TypeTariff.fromNumericValueOfType(this.getTariffId()))
+                .balance(this.getMoney())
                 .build();
     }
 }

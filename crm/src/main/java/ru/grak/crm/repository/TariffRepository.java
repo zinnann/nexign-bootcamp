@@ -7,4 +7,6 @@ import ru.grak.crm.entity.Tariff;
 
 @Repository
 public interface TariffRepository extends JpaRepository<Tariff, TypeTariff> {
+
+    boolean existsByTariff(TypeTariff tariff);
 }

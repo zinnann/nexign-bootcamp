@@ -1,5 +1,7 @@
 package ru.grak.common.enums;
 
+import ru.grak.common.exceptions.TypeNotFoundException;
+
 public enum TypeTariff {
     PER_MINUTE("11"),
     MONTHLY("12");
@@ -16,10 +18,13 @@ public enum TypeTariff {
 
     public static TypeTariff fromNumericValueOfType(String numericValueOfType) {
 
-        if (numericValueOfType.equals("12")) {
+        if ("12".equals(numericValueOfType)) {
             return MONTHLY;
         }
+        if ("11".equals(numericValueOfType)) {
+            return PER_MINUTE;
+        }
 
-        return PER_MINUTE;
+        throw new TypeNotFoundException("Doesn't exist this type");
     }
 }

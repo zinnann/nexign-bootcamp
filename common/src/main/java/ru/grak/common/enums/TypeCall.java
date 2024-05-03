@@ -1,5 +1,7 @@
 package ru.grak.common.enums;
 
+import ru.grak.common.exceptions.TypeNotFoundException;
+
 public enum TypeCall {
     OUTGOING("01"),
     INCOMING("02");
@@ -19,6 +21,11 @@ public enum TypeCall {
         if (numericValueOfType.equals("01")) {
             return OUTGOING;
         }
-        return INCOMING;
+
+        if (numericValueOfType.equals("02")) {
+            return OUTGOING;
+        }
+
+        throw new TypeNotFoundException("Doesn't exist this type");
     }
 }

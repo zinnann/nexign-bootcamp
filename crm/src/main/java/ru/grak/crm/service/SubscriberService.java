@@ -25,7 +25,7 @@ public class SubscriberService {
                         new ClientNotFoundException("Client with msisdn:{0} not found", payment.getMsisdn()));
 
         BigDecimal balance = client.getBalance();
-        BigDecimal updatedBalance = balance.add(payment.getDeposit());
+        BigDecimal updatedBalance = balance.add(payment.getMoney());
         client.setBalance(updatedBalance);
 
         clientRepository.save(client);
