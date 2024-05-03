@@ -1,6 +1,7 @@
 package ru.grak.crm.controllers;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,7 +23,7 @@ public class SubscriberController {
 
     @PatchMapping("/pay")
     @PreAuthorize("hasAnyAuthority('USER')")
-    public BigDecimal pay(@RequestBody PaymentDto payment) {
+    public BigDecimal pay(@Valid @RequestBody PaymentDto payment) {
         return subscriberService.pay(payment);
     }
 
