@@ -3,7 +3,7 @@ package ru.grak.crm.service.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.grak.crm.dto.RegisterRequest;
+import ru.grak.crm.dto.auth.RegisterRequest;
 import ru.grak.crm.entity.RoleEnum;
 import ru.grak.crm.entity.User;
 import ru.grak.crm.exceptions.AbonentAlreadyExistException;

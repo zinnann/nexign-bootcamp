@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.grak.crm.dto.JwtResponse;
-import ru.grak.crm.dto.LoginRequest;
-import ru.grak.crm.dto.RegisterRequest;
+import ru.grak.crm.dto.auth.JwtResponse;
+import ru.grak.crm.dto.auth.LoginRequest;
+import ru.grak.crm.dto.auth.RegisterRequest;
 import ru.grak.crm.service.auth.AuthenticationService;
 import ru.grak.crm.service.auth.RegistrationService;
 

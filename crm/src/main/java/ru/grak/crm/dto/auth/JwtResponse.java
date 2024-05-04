@@ -1,4 +1,4 @@
-package ru.grak.crm.dto;
+package ru.grak.crm.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-import ru.grak.crm.dto.JwtResponse;
-import ru.grak.crm.dto.LoginRequest;
+import ru.grak.crm.dto.auth.JwtResponse;
+import ru.grak.crm.dto.auth.LoginRequest;
 import ru.grak.crm.entity.User;
 import ru.grak.crm.security.jwt.TokenProvider;
 
