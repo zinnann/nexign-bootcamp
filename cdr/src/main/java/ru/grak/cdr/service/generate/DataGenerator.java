@@ -31,7 +31,7 @@ public class DataGenerator {
         return new Pair(firstMsisdn, secondMsisdn);
     }
 
-    public long generateRandomInterval() {
+    public long generateRandomGap() {
         return ThreadLocalRandom.current().nextInt(1000000, 1500000);
     }
 

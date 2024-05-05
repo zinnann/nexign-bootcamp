@@ -15,4 +15,5 @@ public class Abonent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String phoneNumber;
+    private boolean isRomashkaClient;
 }

@@ -6,4 +6,6 @@ import ru.grak.cdr.entity.Abonent;
 
 @Repository
 public interface AbonentRepository extends JpaRepository<Abonent, Long> {
+
+    Abonent findByPhoneNumber(String phoneNumber);
 }

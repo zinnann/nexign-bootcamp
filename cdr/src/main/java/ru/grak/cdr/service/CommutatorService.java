@@ -30,44 +30,60 @@ public class CommutatorService {
     private final FileService fileService;
     private final TransactionService transactionService;
 
+    @Value("${cdr.kafka.topic}")
+    private String kafkaTopicName;
+
     @Value("${cdr.generate.file.capacity}")
     private int fileCapacity;
 
+    @Value("${cdr.generate.date-time-start}")
+    private long startUnixDateTime;
+
+    @Value("${cdr.generate.data-time-end}")
+    private long endUnixDateTime;
+
     private int recordsAmount;
     private int filesAmount;
-
-    private final long startUnixDateTime = 1704067200;
-    private final long endUnixDateTime = 1735689599;
+    private final List<CallDataRecordDto> cdr = new ArrayList<>();
 
     @EventListener(ApplicationReadyEvent.class)
     public void generateCallDataRecords() throws IOException {
 
         long currentUnixDateTime = startUnixDateTime;
         List<Abonent> abonents = abonentService.getAbonentsList();
-        List<CallDataRecordDto> cdr = new ArrayList<>();
 
-        //отдельно вынести счетчик для получения + ||
         while (currentUnixDateTime <= endUnixDateTime) {
 
-            recordsAmount++;
             var msisdnPair = dataGenerator.getRandomPairOfMsisdn(abonents);
-
             CallDataRecordDto callDataRecord = callDataService
                     .generateRandomCallData(currentUnixDateTime, msisdnPair);
-            cdr.add(callDataRecord);
+            handleCallDataRecord(callDataRecord);
 
-            if (isPrepared()) {
-                filesAmount++;
-                fileService.saveCallDataRecords(cdr, filesAmount);
-                transactionService.saveTransactions(cdr);
+            var mirrorRecord = callDataService.generateMirrorRecord(callDataRecord);
 
-                //для считывания коммутатором данных файла и их отправки
-                String fileData = fileService.getCallDataRecords(filesAmount);
-                kafkaTemplate.send("topic1", fileData);
-                cdr.clear();
+            if (mirrorRecord.isPresent()) {
+                handleCallDataRecord(mirrorRecord.get());
             }
 
-            currentUnixDateTime += dataGenerator.generateRandomInterval();
+            currentUnixDateTime += dataGenerator.generateRandomGap();
+        }
+    }
+
+    private void handleCallDataRecord(CallDataRecordDto record) throws IOException {
+        recordsAmount++;
+        cdr.add(record);
+        saveAndSendDataIfBatchReady();
+    }
+
+    private void saveAndSendDataIfBatchReady() throws IOException {
+        if (isPrepared()) {
+            filesAmount++;
+            fileService.saveCallDataRecords(cdr, filesAmount);
+            transactionService.saveTransactions(cdr);
+
+            String fileData = fileService.getCallDataRecords(filesAmount);
+            kafkaTemplate.send(kafkaTopicName, fileData);
+            cdr.clear();
         }
     }
 

@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.grak.cdr.entity.Abonent;
+import ru.grak.cdr.service.db.AbonentService;
 import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.enums.TypeCall;
 
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -14,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CallDataService {
 
     private final DataGenerator dataGenerator;
+    private final AbonentService abonentService;
 
     @Value("${cdr.generate.max-call-duration}")
     private int maxCallDuration;
@@ -37,5 +41,27 @@ public class CallDataService {
                 .dateTimeStartCall(callStartDateTime)
                 .dateTimeEndCall(callEndDateTime)
                 .build();
+    }
+
+    public Optional<CallDataRecordDto> generateMirrorRecord(CallDataRecordDto record) {
+
+        Abonent secondAbonent = abonentService.findByPhoneNumber(record.getMsisdnSecond());
+
+        if (secondAbonent.isRomashkaClient()) {
+
+            TypeCall mirrorTypeCall = record.getTypeCall().equals(TypeCall.OUTGOING)
+                    ? TypeCall.INCOMING
+                    : TypeCall.OUTGOING;
+
+            return Optional.of(CallDataRecordDto.builder()
+                    .typeCall(mirrorTypeCall)
+                    .msisdnFirst(record.getMsisdnSecond())
+                    .msisdnSecond(record.getMsisdnFirst())
+                    .dateTimeStartCall(record.getDateTimeStartCall())
+                    .dateTimeEndCall(record.getDateTimeEndCall())
+                    .build());
+        }
+
+        return Optional.empty();
     }
 }
