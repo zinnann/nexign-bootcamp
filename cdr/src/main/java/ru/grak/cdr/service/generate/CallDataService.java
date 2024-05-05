@@ -1,41 +1,41 @@
 package ru.grak.cdr.service.generate;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.enums.TypeCall;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static ru.grak.cdr.service.generate.DataGeneratorService.generateRandomCallDuration;
-import static ru.grak.cdr.service.generate.DataGeneratorService.generateRandomDateTime;
-
 @Service
 @RequiredArgsConstructor
-public class CallDataGeneratorService {
+public class CallDataService {
 
-    private final DataGeneratorService dataGeneratorService;
+    private final DataGenerator dataGenerator;
 
-    public CallDataRecordDto generateRandomCdr(int year, int month, int maxCallDuration) {
+    @Value("${cdr.generate.max-call-duration}")
+    private int maxCallDuration;
+
+    public CallDataRecordDto generateRandomCallData(long callStartDateTime, Pair<String, String> msisdnPair) {
 
         TypeCall typeCall = ThreadLocalRandom.current().nextBoolean()
                 ? TypeCall.OUTGOING
                 : TypeCall.INCOMING;
 
-        long startDateTime = generateRandomDateTime(year, month);
-        long endDateTime = startDateTime + generateRandomCallDuration(maxCallDuration);
-
-        var msisdnPair = dataGeneratorService.getPairRandomMsisdnFromDB();
         String firstMsisdn = msisdnPair.a;
         String secondMsisdn = msisdnPair.b;
+
+        long callEndDateTime = callStartDateTime
+                + dataGenerator.generateRandomCallDuration(maxCallDuration);
 
         return CallDataRecordDto.builder()
                 .typeCall(typeCall)
                 .msisdnFirst(firstMsisdn)
                 .msisdnSecond(secondMsisdn)
-                .dateTimeStartCall(startDateTime)
-                .dateTimeEndCall(endDateTime)
+                .dateTimeStartCall(callStartDateTime)
+                .dateTimeEndCall(callEndDateTime)
                 .build();
     }
-
 }

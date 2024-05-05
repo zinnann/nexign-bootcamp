@@ -6,40 +6,73 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import ru.grak.cdr.service.generate.CallDataGeneratorService;
+import ru.grak.cdr.entity.Abonent;
+import ru.grak.cdr.service.db.AbonentService;
+import ru.grak.cdr.service.db.TransactionService;
+import ru.grak.cdr.service.generate.CallDataService;
+import ru.grak.cdr.service.generate.DataGenerator;
+import ru.grak.cdr.service.generate.FileService;
 import ru.grak.common.dto.CallDataRecordDto;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CommutatorService {
 
-    private final KafkaTemplate<String, CallDataRecordDto> kafkaTemplate;
-    private final CallDataGeneratorService recordGeneratorService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    @Value("${cdr.generate.year}")
-    private int year;
+    private final CallDataService callDataService;
+    private final DataGenerator dataGenerator;
+    private final AbonentService abonentService;
+    private final FileService fileService;
+    private final TransactionService transactionService;
 
-    @Value("${cdr.generate.maxCallDuration}")
-    private int maxCallDuration;
+    @Value("${cdr.generate.file.capacity}")
+    private int fileCapacity;
 
-    @Value("${cdr.generate.maxCalls}")
-    private int maxCalls;
+    private int recordsAmount;
+    private int filesAmount;
 
-    private final static int MONTH = 12;
+    private final long startUnixDateTime = 1704067200;
+    private final long endUnixDateTime = 1735689599;
 
     @EventListener(ApplicationReadyEvent.class)
-    public void generateCallDataRecords(){
+    public void generateCallDataRecords() throws IOException {
 
-        int countCDR = ThreadLocalRandom.current().nextInt(maxCalls);
+        long currentUnixDateTime = startUnixDateTime;
+        List<Abonent> abonents = abonentService.getAbonentsList();
+        List<CallDataRecordDto> cdr = new ArrayList<>();
 
-        for (int month = 1; month <= MONTH; month++) {
-            for (int j = 0; j < countCDR; j++) {
-                var record = recordGeneratorService.generateRandomCdr(year, month, maxCallDuration);
-                kafkaTemplate.send("topic1", record);
+        //отдельно вынести счетчик для получения + ||
+        while (currentUnixDateTime <= endUnixDateTime) {
+
+            recordsAmount++;
+            var msisdnPair = dataGenerator.getRandomPairOfMsisdn(abonents);
+
+            CallDataRecordDto callDataRecord = callDataService
+                    .generateRandomCallData(currentUnixDateTime, msisdnPair);
+            cdr.add(callDataRecord);
+
+            if (isPrepared()) {
+                filesAmount++;
+                fileService.saveCallDataRecords(cdr, filesAmount);
+                transactionService.saveTransactions(cdr);
+
+                //для считывания коммутатором данных файла и их отправки
+                String fileData = fileService.getCallDataRecords(filesAmount);
+                kafkaTemplate.send("topic1", fileData);
+                cdr.clear();
             }
+
+            currentUnixDateTime += dataGenerator.generateRandomInterval();
         }
+    }
+
+    private boolean isPrepared() {
+        return recordsAmount % fileCapacity == 0;
     }
 
 }

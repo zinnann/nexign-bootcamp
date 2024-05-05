@@ -2,7 +2,6 @@ package ru.grak.cdr.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.grak.common.enums.TypeCall;
 
 @Entity
 @Getter
@@ -18,7 +17,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private TypeCall typeCall;
+    private String typeCall;
     private String msisdnFirst;
     private String msisdnSecond;
     private Long dateTimeStartCall;

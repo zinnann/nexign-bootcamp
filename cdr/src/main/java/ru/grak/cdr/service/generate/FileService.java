@@ -7,32 +7,38 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService {
 
-    //в prop вынести
-    private static final String CDR_FOLDER_PATH = "cdr/";
+    private static final String CDR_FOLDER_PATH = "cdr/data/";
     private static final String CDR_FILE_PREFIX = "cdr";
     private static final String CDR_FILE_EXTENSION = ".txt";
 
-    private static int counter;
+    public void saveCallDataRecords(List<CallDataRecordDto> cdrList, int fileNumber) throws IOException {
 
-    public void saveCallDataRecords(List<CallDataRecordDto> chronologicalCdrList) throws IOException, SQLException {
-
-        String cdrFileName = CDR_FOLDER_PATH + CDR_FILE_PREFIX + "_" + counter + CDR_FILE_EXTENSION;
+        createDirectory(CDR_FOLDER_PATH);
+        String cdrFileName = CDR_FOLDER_PATH + CDR_FILE_PREFIX + "_" + fileNumber + CDR_FILE_EXTENSION;
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(cdrFileName))) {
 
-            for (CallDataRecordDto callDataRecord : chronologicalCdrList) {
+            for (CallDataRecordDto callDataRecord : cdrList) {
                 writer.println(cdrFormat(callDataRecord));
             }
         }
     }
 
-//    public void getCallDataRecords() throws IOException, SQLException {}
+    public String getCallDataRecords(int fileNumber) throws IOException {
+
+        String cdrFileName = CDR_FOLDER_PATH + CDR_FILE_PREFIX + "_" + fileNumber + CDR_FILE_EXTENSION;
+
+        return Files.lines(Paths.get(cdrFileName))
+                .collect(Collectors.joining(System.lineSeparator()));
+    }
 
     private static String cdrFormat(CallDataRecordDto dataRecord) {
         return dataRecord.getTypeCall().getNumericValueOfType() + ", "

@@ -1,6 +1,22 @@
--- INSERT INTO cdr (type_call, msisdn_first, msisdn_second, date_time_start_call, date_time_end_call)
--- VALUES ('', 1241, 12313);
+INSERT INTO abonents (phone_number)
+VALUES ('79079765785');
+INSERT INTO abonents (phone_number)
+VALUES ('79940402705');
+INSERT INTO abonents (phone_number)
+VALUES ('79389821025');
+INSERT INTO abonents (phone_number)
+VALUES ('79168034603');
+INSERT INTO abonents (phone_number)
+VALUES ('79826977157');
+INSERT INTO abonents (phone_number)
+VALUES ('79304297409');
+INSERT INTO abonents (phone_number)
+VALUES ('79105019470');
+INSERT INTO abonents (phone_number)
+VALUES ('79981679394');
+INSERT INTO abonents (phone_number)
+VALUES ('79571901641');
+INSERT INTO abonents (phone_number)
+VALUES ('79437938986');
 
-INSERT INTO clients (phone_number) VALUES ('89879151413');
-INSERT INTO clients (phone_number) VALUES ('89879151412');
-INSERT INTO clients (phone_number) VALUES ('89879151411');
+-- http://localhost:8080/h2-console

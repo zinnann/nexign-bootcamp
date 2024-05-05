@@ -13,7 +13,7 @@ public class AbonentService {
 
     private final AbonentRepository abonentRepository;
 
-    public List<Abonent> getClientsList(){
+    public List<Abonent> getAbonentsList() {
         return abonentRepository.findAll();
     }
 

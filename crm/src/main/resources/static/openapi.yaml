@@ -1,0 +1,150 @@
+openapi: 3.0.0
+info:
+  title: Расчет баланса API
+  description: API для описания процесса расчета баланса абонентов
+  termsOfService: http://nexignprojapi.ru
+  contact:
+    name: Rudenko Diana
+    email: di4na.rudenko@yandex.ru
+  license:
+    name: MIT
+  version: 1.0.0
+servers:
+  - url: https://nexignprojapi.ru/api
+    description: Production Server
+tags:
+  - name: user
+    description: 'Абонент'
+  - name: manager
+    description: 'Менеджер'
+
+paths:
+  /User/{msisdn}:
+    put:
+      tags:
+        - manager
+      security:
+        - Auth_method: [ ]
+      summary: Смена тарифного плана абонента
+      operationId: changeTariff
+      description: Менеджер имеет возможность изменить тарифный план абонента
+      parameters:
+        - name: msisdn
+          in: path
+          description: Номер телефона абонента
+          required: true
+          schema:
+            type: integer
+            example: 88005553535
+      responses:
+        '201':
+          description: Тариф успешно изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Данные введены некоррекно
+        '404':
+          description: Пользователь не найден
+        '5XX':
+          description: Ошибка на стороне сервера
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                tariffId:
+                  type: integer
+                  description: Обновленный ID тарифа абонента
+                  format: int
+                  example: 0001
+    patch:
+      tags:
+        - user
+      summary: Пополнение баланса абонета
+      operationId: pay
+      parameters:
+        - name: msisdn
+          in: path
+          description: Номер телефона абонента
+          required: true
+          schema:
+            type: integer
+            example: 88005553535
+      responses:
+        '200':
+          description: Пополнение баланса произведено успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Данные введены некорректно
+        '404':
+          description: Пользователь не найден
+        '5XX':
+          description: Ошибка сервера
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                money:
+                  type: number
+                  description: Сумма пополнения баланса
+                  format: float
+                  example: 9999.99
+
+  /User:
+    post:
+      tags:
+        - manager
+      security:
+        - Auth_method: [ ]
+      operationId: save
+      summary: Добавление нового абонента в базу
+      responses:
+        '201':
+          description: Данные о новом абоненте добавлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Данные введены некорректно
+        '5XX':
+          description: Ошибка на стороне сервера
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        msisdn:
+          type: integer
+          description: Номер телефона абонента
+          format: int
+          example: 88005553535
+        tariffId:
+          type: integer
+          description: ID тарифа абонента
+          format: int
+          example: 0001
+        balance:
+          type: number
+          description: Баланс абонента
+          format: float
+          example: 9999.99
+
+  securitySchemes:
+    Auth_method:
+      type: http
+      scheme: basic
+      description: Авторизация менеджера с указанием логина и пароля
