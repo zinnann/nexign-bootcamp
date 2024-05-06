@@ -1,9 +1,9 @@
 package ru.grak.brt.service.billing;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.grak.brt.repository.ClientRepository;
-import ru.grak.common.dto.CallDataRecordDto;
 
 @Service
 @RequiredArgsConstructor
@@ -11,8 +11,20 @@ public class AuthorizationService {
 
     private final ClientRepository clientsRepository;
 
-    public boolean isAuthorizedRecord(CallDataRecordDto callDataRecord) {
+    /**
+     * Проверяет, авторизован ли абонент с указанным msisdn.
+     * <p>
+     * Результат метода кэшируется с использованием Spring Cache.
+     * Реализация с map/set не была использована, т.к не подходит
+     * для распределенных приложений (хранится в памяти одного процесса)
+     *
+     * @param msisdn номер телефона абонента
+     * @return true, если абонент авторизован, false в противном случае
+     */
+    @Cacheable("clients")
+    public boolean isAuthorizedRecord(String msisdn) {
         return clientsRepository
-                .existsByPhoneNumber(callDataRecord.getMsisdnFirst());
+                .existsByPhoneNumber(msisdn);
     }
+
 }

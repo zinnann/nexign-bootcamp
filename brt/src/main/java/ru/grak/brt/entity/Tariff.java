@@ -1,7 +1,6 @@
 package ru.grak.brt.entity;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 import ru.grak.common.enums.TypeTariff;
 
@@ -16,7 +15,7 @@ import java.math.BigDecimal;
 @Table(name = "tariff")
 public class Tariff {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Enumerated(EnumType.STRING)
     private TypeTariff tariff;
 
     private String name;

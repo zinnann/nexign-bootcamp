@@ -5,25 +5,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.grak.brt.entity.Client;
 import ru.grak.brt.entity.Tariff;
-import ru.grak.brt.entity.Traffic;
 import ru.grak.brt.repository.ClientRepository;
 import ru.grak.brt.repository.TariffRepository;
 import ru.grak.brt.repository.TrafficRepository;
 import ru.grak.brt.service.billing.BalanceService;
-import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.enums.TypeTariff;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
-public class AutoModifyingDataService {
+public class AutoUpdatingDataService {
 
     private final ClientRepository clientRepository;
     private final TariffRepository tariffRepository;
@@ -36,15 +30,10 @@ public class AutoModifyingDataService {
     @Value("${brt.random.clients.amount}")
     private int maxClientsForUpdatingTariff;
 
-    public void autoChangeBalanceAndTariff(CallDataRecordDto cdr) {
-        int currentMonth = extractMonth(cdr.getDateTimeStartCall());
-        int previousMonth = extractLastPreviousMonthFromTraffic();
-
-        if (currentMonth > previousMonth) {
-            List<Client> clients = clientRepository.findAll();
-            changeClientsBalance(clients);
-            changeClientsTariff(clients);
-        }
+    public void autoChangeBalanceAndTariff() {
+        List<Client> clients = clientRepository.findAll();
+        changeClientsBalance(clients);
+        changeClientsTariff(clients);
     }
 
     private void changeClientsBalance(List<Client> clients) {
@@ -57,12 +46,12 @@ public class AutoModifyingDataService {
     }
 
     private void changeClientsTariff(List<Client> clients) {
-        int amountClientsForChanging = ThreadLocalRandom.current()
+        int amountClientForChanging = ThreadLocalRandom.current()
                 .nextInt(maxClientsForUpdatingTariff) + 1;
 
         var tariffs = tariffRepository.findAll();
 
-        for (int i = 0; i < amountClientsForChanging; i++) {
+        for (int i = 0; i < amountClientForChanging; i++) {
             var client = clients.get(
                     ThreadLocalRandom.current().nextInt(clients.size()));
 
@@ -86,17 +75,4 @@ public class AutoModifyingDataService {
         return updatedTariff;
     }
 
-    //TODO overload and allocate + sql
-    private int extractLastPreviousMonthFromTraffic() {
-        return trafficRepository.findAll()
-                .stream()
-                .max(Comparator.comparing(Traffic::getMonth)).get()
-                .getMonth();
-    }
-
-    private int extractMonth(long dateTime) {
-        return LocalDate.
-                ofInstant(Instant.ofEpochSecond(dateTime), ZoneOffset.UTC)
-                .getMonthValue();
-    }
 }

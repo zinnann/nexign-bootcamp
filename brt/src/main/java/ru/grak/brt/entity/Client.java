@@ -20,6 +20,7 @@ public class Client {
     private Long id;
 
     private String phoneNumber;
+    @Enumerated(EnumType.STRING)
     private TypeTariff tariff;
     private BigDecimal balance;
 }

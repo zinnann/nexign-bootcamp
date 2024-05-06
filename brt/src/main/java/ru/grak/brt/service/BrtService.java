@@ -4,34 +4,81 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import ru.grak.brt.service.automation.AutoModifyingDataService;
+import ru.grak.brt.service.automation.AutoUpdatingDataService;
 import ru.grak.brt.service.billing.AuthorizationService;
 import ru.grak.brt.service.billing.CdrPlusService;
-import ru.grak.brt.service.billing.SubscriptionsFeeService;
 import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.dto.CallDataRecordPlusDto;
+import ru.grak.common.enums.TypeCall;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BrtService {
+
     private final AuthorizationService auth;
     private final CdrPlusService cdrPlusService;
-    private final SubscriptionsFeeService subscriptionsFeeService;
-    private final AutoModifyingDataService autoModifyingDataService;
+    private final AutoUpdatingDataService autoUpdatingDataService;
 
     private final KafkaTemplate<String, CallDataRecordPlusDto> kafkaTemplate;
 
-    //считываем из t1, отправляем и получаем в t2/t2-reply
-    @KafkaListener(topics = "topic1")
-    void listener(CallDataRecordDto callDataRecord) {
+    private int currentMonth = 1;
 
-        if (auth.isAuthorizedRecord(callDataRecord)){
-            subscriptionsFeeService.subscriptionsFeeWithdrawal(callDataRecord);
+    //считываем из t1, отправляем в t2
+    @KafkaListener(groupId = "topic-default", topics = "topic1")
+    public void processingCallData(String data) {
 
-            CallDataRecordPlusDto cdrPlus = cdrPlusService.createCdrPlus(callDataRecord);
-            kafkaTemplate.send("topic2", cdrPlus);
+        List<CallDataRecordDto> cdr = parseCallDataFromReceivedData(data);
 
-            autoModifyingDataService.autoChangeBalanceAndTariff(callDataRecord);
+        for (CallDataRecordDto callDataRecord : cdr) {
+            int callMonth = extractMonthFromCallData(callDataRecord);
+
+            if (callMonth > currentMonth) {
+                currentMonth = callMonth;
+                autoUpdatingDataService.autoChangeBalanceAndTariff();
+            }
+
+            if (auth.isAuthorizedRecord(callDataRecord.getMsisdnFirst())) {
+                CallDataRecordPlusDto cdrPlus = cdrPlusService.createCdrPlus(callDataRecord);
+                kafkaTemplate.send("topic2", cdrPlus);
+            }
         }
     }
+
+    private List<CallDataRecordDto> parseCallDataFromReceivedData(String data) {
+
+        List<CallDataRecordDto> callDataRecordList = new ArrayList<>();
+        var callDataRaws = data.split(System.lineSeparator());
+
+        for (String raw : callDataRaws) {
+            var cdr = raw.split(", ");
+
+            callDataRecordList.add(
+                    CallDataRecordDto
+                            .builder()
+                            .typeCall(TypeCall.fromNumericValueOfType(cdr[0]))
+                            .msisdnFirst(cdr[1])
+                            .msisdnSecond(cdr[2])
+                            .dateTimeStartCall(Long.parseLong(cdr[3]))
+                            .dateTimeEndCall(Long.parseLong(cdr[4]))
+                            .build()
+            );
+        }
+
+        return callDataRecordList;
+    }
+
+    private int extractMonthFromCallData(CallDataRecordDto callDataRecord) {
+        var dateTimeStartCall = callDataRecord.getDateTimeStartCall();
+
+        return LocalDate.
+                ofInstant(Instant.ofEpochSecond(dateTimeStartCall), ZoneOffset.UTC)
+                .getMonthValue();
+    }
+
 }
