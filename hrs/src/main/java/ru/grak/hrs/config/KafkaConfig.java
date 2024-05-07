@@ -12,7 +12,7 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.grak.common.dto.CallDataRecordPlusDto;
-import ru.grak.hrs.dto.CallDetailsDto;
+import ru.grak.common.dto.CostDataDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +23,9 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
+    //Cost Data to BRT
     @Bean
-    public ProducerFactory<String, CallDetailsDto> producerFactory() {
+    public ProducerFactory<String, CostDataDto> producerFactory() {
 
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -35,18 +36,24 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, CallDetailsDto> kafkaTemplate() {
+    public KafkaTemplate<String, CostDataDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
+    //CDR+ from BRT
     @Bean
     public ConsumerFactory<String, CallDataRecordPlusDto> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
+
+        JsonDeserializer<CallDataRecordPlusDto> callDataRecordDeserializer =
+                new JsonDeserializer<>();
+        callDataRecordDeserializer.addTrustedPackages("*");
+
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        return new DefaultKafkaConsumerFactory<>(props);
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), callDataRecordDeserializer);
     }
 
     @Bean

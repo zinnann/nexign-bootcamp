@@ -66,11 +66,16 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, CostDataDto> costDataConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
+
+        JsonDeserializer<CostDataDto> costDataDeserializer =
+                new JsonDeserializer<>();
+        costDataDeserializer.addTrustedPackages("*");
+
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        return new DefaultKafkaConsumerFactory<>(props);
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), costDataDeserializer);
     }
 
     @Bean
