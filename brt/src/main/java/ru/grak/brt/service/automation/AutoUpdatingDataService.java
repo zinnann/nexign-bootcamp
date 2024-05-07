@@ -32,11 +32,11 @@ public class AutoUpdatingDataService {
 
     public void autoChangeBalanceAndTariff() {
         List<Client> clients = clientRepository.findAll();
-        changeClientsBalance(clients);
+        refillClientsBalance(clients);
         changeClientsTariff(clients);
     }
 
-    private void changeClientsBalance(List<Client> clients) {
+    private void refillClientsBalance(List<Client> clients) {
         for (Client client : clients) {
             BigDecimal deposit = BigDecimal.valueOf(
                     ThreadLocalRandom.current().nextDouble(maxAutoDeposit));
@@ -45,6 +45,7 @@ public class AutoUpdatingDataService {
         }
     }
 
+    //TODO month fee + get tariff + traffic update
     private void changeClientsTariff(List<Client> clients) {
         int amountClientForChanging = ThreadLocalRandom.current()
                 .nextInt(maxClientsForUpdatingTariff) + 1;
@@ -61,7 +62,6 @@ public class AutoUpdatingDataService {
 
             clientRepository.save(client);
         }
-        //+ списание за предыдущий месяц?
     }
 
     private TypeTariff getModifiedTariff(List<Tariff> tariffs, TypeTariff currentTariff) {

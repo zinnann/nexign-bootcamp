@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.dto.CallDataRecordPlusDto;
-
+import ru.grak.common.dto.CostDataDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +23,7 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
+    //CDR+ to HRS
     @Bean
     public ProducerFactory<String, CallDataRecordPlusDto> producerFactory() {
 
@@ -39,6 +40,7 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
+    //CDR-file from CDR
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -59,4 +61,27 @@ public class KafkaConfig {
 
         return concurrentKafkaListenerContainerFactory;
     }
+
+    //Cost data from HRS
+    @Bean
+    public ConsumerFactory<String, CostDataDto> costDataConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, CostDataDto> costDataKafkaListenerContainerFactory() {
+
+        ConcurrentKafkaListenerContainerFactory<String, CostDataDto> concurrentKafkaListenerContainerFactory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+
+        concurrentKafkaListenerContainerFactory.setConsumerFactory(costDataConsumerFactory());
+
+        return concurrentKafkaListenerContainerFactory;
+    }
+
 }

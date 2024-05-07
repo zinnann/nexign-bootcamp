@@ -6,9 +6,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.grak.brt.service.automation.AutoUpdatingDataService;
 import ru.grak.brt.service.billing.AuthorizationService;
+import ru.grak.brt.service.billing.BalanceService;
 import ru.grak.brt.service.billing.CdrPlusService;
 import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.dto.CallDataRecordPlusDto;
+import ru.grak.common.dto.CostDataDto;
 import ru.grak.common.enums.TypeCall;
 
 import java.time.Instant;
@@ -24,14 +26,16 @@ public class BrtService {
     private final AuthorizationService auth;
     private final CdrPlusService cdrPlusService;
     private final AutoUpdatingDataService autoUpdatingDataService;
+    private final BalanceService balanceService;
 
     private final KafkaTemplate<String, CallDataRecordPlusDto> kafkaTemplate;
 
     private int currentMonth = 1;
 
-    //считываем из t1, отправляем в t2
-    @KafkaListener(groupId = "topic-default", topics = "topic1")
-    public void processingCallData(String data) {
+    //TODO transactional + currMonth
+
+    @KafkaListener(topics = "topic1", groupId = "topic-default", containerFactory = "kafkaListenerContainerFactory")
+    public void processingAndSendCallData(String data) {
 
         List<CallDataRecordDto> cdr = parseCallDataFromReceivedData(data);
 
@@ -43,11 +47,18 @@ public class BrtService {
                 autoUpdatingDataService.autoChangeBalanceAndTariff();
             }
 
-            if (auth.isAuthorizedRecord(callDataRecord.getMsisdnFirst())) {
+            if (auth.isAuthorizedMsisdn(callDataRecord.getMsisdnFirst())) {
                 CallDataRecordPlusDto cdrPlus = cdrPlusService.createCdrPlus(callDataRecord);
-                kafkaTemplate.send("topic2", cdrPlus);
+//                kafkaTemplate.send("topic2", cdrPlus);
             }
         }
+    }
+
+    @KafkaListener(topics = "topic2-retry", groupId = "topic-default", containerFactory =
+            "costDataKafkaListenerContainerFactory")
+    public void processingCostData(CostDataDto costData) {
+        System.out.println(costData);
+//        balanceService.decreaseBalance(costData.getMsisdn(), costData.getCost());
     }
 
     private List<CallDataRecordDto> parseCallDataFromReceivedData(String data) {

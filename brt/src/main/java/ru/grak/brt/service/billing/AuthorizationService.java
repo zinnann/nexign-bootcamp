@@ -16,13 +16,13 @@ public class AuthorizationService {
      * <p>
      * Результат метода кэшируется с использованием Spring Cache.
      * Реализация с map/set не была использована, т.к не подходит
-     * для распределенных приложений (хранится в памяти одного процесса)
+     * для распределенных приложений (хранится в памяти одного процесса).
      *
-     * @param msisdn номер телефона абонента
-     * @return true, если абонент авторизован, false в противном случае
+     * @param msisdn номер телефона абонента.
+     * @return true, если абонент авторизован, false в противном случае.
      */
-    @Cacheable("clients")
-    public boolean isAuthorizedRecord(String msisdn) {
+    @Cacheable("msisdns")
+    public boolean isAuthorizedMsisdn(String msisdn) {
         return clientsRepository
                 .existsByPhoneNumber(msisdn);
     }

@@ -19,4 +19,5 @@ public class CallDataRecordPlusDto {
     private Long dateTimeStartCall;
     private Long dateTimeEndCall;
     private TypeTariff typeTariff;
+    private boolean isInternalCall;
 }

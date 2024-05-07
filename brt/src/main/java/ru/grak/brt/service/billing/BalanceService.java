@@ -13,7 +13,8 @@ public class BalanceService {
 
     private final ClientRepository clientRepository;
 
-    public void decreaseBalance(Client client, BigDecimal fee){
+    public void decreaseBalance(String msisdn, BigDecimal fee) {
+        var client = clientRepository.findByPhoneNumber(msisdn);
         BigDecimal balance = client.getBalance();
         BigDecimal updatedBalance = balance.subtract(fee);
         client.setBalance(updatedBalance);
@@ -21,7 +22,8 @@ public class BalanceService {
         clientRepository.save(client);
     }
 
-    public void refillBalance(Client client, BigDecimal deposit){
+    //TODO native query
+    public void refillBalance(Client client, BigDecimal deposit) {
         BigDecimal balance = client.getBalance();
         BigDecimal updatedBalance = balance.add(deposit);
         client.setBalance(updatedBalance);
