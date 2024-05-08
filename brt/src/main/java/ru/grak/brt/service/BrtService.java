@@ -1,6 +1,7 @@
 package ru.grak.brt.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import ru.grak.brt.service.billing.BalanceService;
 import ru.grak.brt.service.billing.CdrPlusService;
 import ru.grak.common.dto.CallDataRecordDto;
 import ru.grak.common.dto.CallDataRecordPlusDto;
-import ru.grak.common.dto.CostDataDto;
+import ru.grak.common.dto.InvoiceDto;
 import ru.grak.common.enums.TypeCall;
 
 import java.time.Instant;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BrtService {
 
     private final AuthorizationService auth;
@@ -48,6 +50,7 @@ public class BrtService {
             }
 
             if (auth.isAuthorizedMsisdn(callDataRecord.getMsisdnFirst())) {
+                log.info(callDataRecord.toString());
                 CallDataRecordPlusDto cdrPlus = cdrPlusService.createCdrPlus(callDataRecord);
                 kafkaTemplate.send("topic2", cdrPlus);
             }
@@ -56,9 +59,9 @@ public class BrtService {
 
     @KafkaListener(topics = "topic2-reply", groupId = "topic-default", containerFactory =
             "costDataKafkaListenerContainerFactory")
-    public void processingCostData(CostDataDto costData) {
-        System.out.println(costData);
-//        balanceService.decreaseBalance(costData.getMsisdn(), costData.getCost());
+    public void processingCostData(InvoiceDto invoiceData) {
+        log.info(invoiceData.toString());
+        balanceService.decreaseBalance(invoiceData.getMsisdn(), invoiceData.getCost());
     }
 
     private List<CallDataRecordDto> parseCallDataFromReceivedData(String data) {

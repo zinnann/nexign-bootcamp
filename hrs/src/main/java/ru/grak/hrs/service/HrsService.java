@@ -1,37 +1,53 @@
 package ru.grak.hrs.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.grak.common.dto.CallDataRecordPlusDto;
-import ru.grak.common.dto.CostDataDto;
-import ru.grak.hrs.service.tariffication.TarifficationService;
+import ru.grak.common.dto.InvoiceDto;
 
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HrsService {
 
-    private final KafkaTemplate<String, CostDataDto> kafkaTemplate;
+    private final KafkaTemplate<String, InvoiceDto> kafkaTemplate;
     private final TarifficationService tarifficationService;
+
+    private final Map<String, Integer> usedMinutes = new HashMap<>();
+
+    private int currentMonth = 1;
 
     @KafkaListener(topics = "topic2", groupId = "group-id", containerFactory = "kafkaListenerContainerFactory")
     public void invoicing(CallDataRecordPlusDto cdrPlus) {
+        log.info(cdrPlus.toString());
 
-        System.out.println(cdrPlus);
-//        var callDetails = tarifficationService.createCallDetails(cdrPlus);
+        var invoiceData = tarifficationService.createInvoice(cdrPlus, usedMinutes);
+        kafkaTemplate.send("topic2-reply", invoiceData);
 
-        for (int i = 0; i < 10; i++) {
-            kafkaTemplate.send("topic2-reply", CostDataDto.
-                    builder()
-                    .cost(BigDecimal.valueOf(100))
-                    .msisdn("7987")
-                    .build());
+        int callMonth = extractMonthFromCallData(cdrPlus);
+
+        if (callMonth > currentMonth) {
+            currentMonth = callMonth;
+//            withdrawFee();
         }
 
+    }
 
+    private int extractMonthFromCallData(CallDataRecordPlusDto cdrPlus) {
+        var dateTimeStartCall = cdrPlus.getDateTimeStartCall();
+
+        return LocalDate.
+                ofInstant(Instant.ofEpochSecond(dateTimeStartCall), ZoneOffset.UTC)
+                .getMonthValue();
     }
 
 }

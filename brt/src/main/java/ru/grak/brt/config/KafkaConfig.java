@@ -12,7 +12,7 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.grak.common.dto.CallDataRecordPlusDto;
-import ru.grak.common.dto.CostDataDto;
+import ru.grak.common.dto.InvoiceDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,10 +64,10 @@ public class KafkaConfig {
 
     //Cost data from HRS
     @Bean
-    public ConsumerFactory<String, CostDataDto> costDataConsumerFactory() {
+    public ConsumerFactory<String, InvoiceDto> costDataConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
 
-        JsonDeserializer<CostDataDto> costDataDeserializer =
+        JsonDeserializer<InvoiceDto> costDataDeserializer =
                 new JsonDeserializer<>();
         costDataDeserializer.addTrustedPackages("*");
 
@@ -79,9 +79,9 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, CostDataDto> costDataKafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, InvoiceDto> costDataKafkaListenerContainerFactory() {
 
-        ConcurrentKafkaListenerContainerFactory<String, CostDataDto> concurrentKafkaListenerContainerFactory =
+        ConcurrentKafkaListenerContainerFactory<String, InvoiceDto> concurrentKafkaListenerContainerFactory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
         concurrentKafkaListenerContainerFactory.setConsumerFactory(costDataConsumerFactory());

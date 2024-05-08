@@ -12,7 +12,7 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.grak.common.dto.CallDataRecordPlusDto;
-import ru.grak.common.dto.CostDataDto;
+import ru.grak.common.dto.InvoiceDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class KafkaConfig {
 
     //Cost Data to BRT
     @Bean
-    public ProducerFactory<String, CostDataDto> producerFactory() {
+    public ProducerFactory<String, InvoiceDto> producerFactory() {
 
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -36,7 +36,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, CostDataDto> kafkaTemplate() {
+    public KafkaTemplate<String, InvoiceDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 

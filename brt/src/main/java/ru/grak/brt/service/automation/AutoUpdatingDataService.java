@@ -25,7 +25,7 @@ public class AutoUpdatingDataService {
     private final BalanceService balanceService;
 
     @Value("${brt.deposit.max}")
-    private double maxAutoDeposit;
+    private int maxAutoDeposit;
 
     @Value("${brt.random.clients.amount}")
     private int maxClientsForUpdatingTariff;
@@ -33,13 +33,13 @@ public class AutoUpdatingDataService {
     public void autoChangeBalanceAndTariff() {
         List<Client> clients = clientRepository.findAll();
         refillClientsBalance(clients);
-        changeClientsTariff(clients);
+//        changeClientsTariff(clients);
     }
 
     private void refillClientsBalance(List<Client> clients) {
         for (Client client : clients) {
             BigDecimal deposit = BigDecimal.valueOf(
-                    ThreadLocalRandom.current().nextDouble(maxAutoDeposit));
+                    ThreadLocalRandom.current().nextInt(maxAutoDeposit));
 
             balanceService.refillBalance(client, deposit);
         }

@@ -13,10 +13,10 @@ public class BalanceService {
 
     private final ClientRepository clientRepository;
 
-    public void decreaseBalance(String msisdn, BigDecimal fee) {
+    public void decreaseBalance(String msisdn, BigDecimal cost) {
         var client = clientRepository.findByPhoneNumber(msisdn);
         BigDecimal balance = client.getBalance();
-        BigDecimal updatedBalance = balance.subtract(fee);
+        BigDecimal updatedBalance = balance.subtract(cost);
         client.setBalance(updatedBalance);
 
         clientRepository.save(client);
