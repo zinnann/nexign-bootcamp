@@ -39,6 +39,7 @@ public class BrtService {
     @KafkaListener(topics = "topic1", groupId = "topic-default", containerFactory = "kafkaListenerContainerFactory")
     public void processingAndSendingCallData(String data) {
 
+        log.info(data);
         List<CallDataRecordDto> cdr = parseCallDataFromReceivedData(data);
 
         for (CallDataRecordDto callDataRecord : cdr) {
@@ -67,7 +68,7 @@ public class BrtService {
     private List<CallDataRecordDto> parseCallDataFromReceivedData(String data) {
 
         List<CallDataRecordDto> callDataRecordList = new ArrayList<>();
-        var callDataRaws = data.split(System.lineSeparator());
+        var callDataRaws = data.split("\n");
 
         for (String raw : callDataRaws) {
             var cdr = raw.split(", ");
