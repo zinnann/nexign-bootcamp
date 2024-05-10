@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class BalanceService {
 
+    //TODO native query
     private final ClientRepository clientRepository;
 
     public void decreaseBalance(String msisdn, BigDecimal cost) {
@@ -22,7 +23,6 @@ public class BalanceService {
         clientRepository.save(client);
     }
 
-    //TODO native query
     public void refillBalance(Client client, BigDecimal deposit) {
         BigDecimal balance = client.getBalance();
         BigDecimal updatedBalance = balance.add(deposit);

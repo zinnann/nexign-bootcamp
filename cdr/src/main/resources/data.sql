@@ -1,4 +1,4 @@
--- Field isRomashkaClient need to generating mirror record (to recognize our clients)
+-- Field isRomashkaClient needs to generating mirror record (to recognize our clients)
 INSERT INTO abonents (phone_number, is_romashka_client)
 VALUES ('79079765785', true);
 INSERT INTO abonents (phone_number, is_romashka_client)

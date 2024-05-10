@@ -37,7 +37,7 @@ public class FileService {
         String cdrFileName = CDR_FOLDER_PATH + CDR_FILE_PREFIX + "_" + fileNumber + CDR_FILE_EXTENSION;
 
         return Files.lines(Paths.get(cdrFileName))
-                .collect(Collectors.joining(System.lineSeparator()));
+                .collect(Collectors.joining("\n"));
     }
 
     private static String cdrFormat(CallDataRecordDto dataRecord) {

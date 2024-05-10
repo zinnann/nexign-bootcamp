@@ -23,7 +23,7 @@ public enum TypeCall {
         }
 
         if (numericValueOfType.equals("02")) {
-            return OUTGOING;
+            return INCOMING;
         }
 
         throw new TypeNotFoundException("Doesn't exist this type");

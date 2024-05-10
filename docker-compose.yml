@@ -42,6 +42,39 @@ services:
     depends_on:
       - kafka
 
+  database:
+    image: postgres:15-alpine
+    container_name: database
+    ports:
+      - "5438:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    healthcheck:
+      test: [ "CMD", "pg_isready","-d","postgres","-U","postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-net
+    volumes:
+      - ./liquibase/changelog/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - /var/lib/postgresql/data
+    restart: always
+
+  #  liquibase:
+  #    image: liquibase/liquibase:4.17.2
+  #    networks:
+  #      - app-net
+  #    command: liquibase --driver=org.postgresql.Driver --url=jdbc:postgresql://database:5432/postgres --password=postgres --username=postgres --changelog-file=/boot/db.changelog-master.xml update
+  #    volumes:
+  #      - ./liquibase/changelog:/liquibase/boot/changelog
+  #      - ./liquibase/changelog/db.changelog-master.xml:/liquibase/boot/db.changelog-master.xml
+  #      - ./liquibase/changelog/init-db.sql:/liquibase/boot/init-db.sql
+  #    depends_on:
+  #      - database
+
   cdr:
     image: graksergey/spring-boot-cdr:latest
     restart: always
@@ -54,6 +87,25 @@ services:
       - app-net
       - kafka-net
     depends_on:
+      - kafka
+
+  brt:
+    image: graksergey/spring-boot-brt:latest
+    restart: always
+    container_name: brt
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DATABASE: postgres
+      POSTGRES_URL: jdbc:postgresql://database:5432/postgres
+      BOOTSTRAP_SERVERS_CONFIG: kafka:29092
+    ports:
+      - "8081:8081"
+    networks:
+      - app-net
+      - kafka-net
+    depends_on:
+      - database
       - kafka
 
 networks:

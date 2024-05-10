@@ -34,13 +34,13 @@ public class BrtService {
 
     private int currentMonth = 1;
 
-    //TODO transactional + currMonth
+    //TODO transactional
 
     @KafkaListener(topics = "topic1", groupId = "topic-default", containerFactory = "kafkaListenerContainerFactory")
     public void processingAndSendingCallData(String data) {
 
-        log.info(data);
         List<CallDataRecordDto> cdr = parseCallDataFromReceivedData(data);
+        log.info("Received: " + cdr);
 
         for (CallDataRecordDto callDataRecord : cdr) {
             int callMonth = extractMonthFromCallData(callDataRecord);
@@ -51,7 +51,7 @@ public class BrtService {
             }
 
             if (auth.isAuthorizedMsisdn(callDataRecord.getMsisdnFirst())) {
-                log.info(callDataRecord.toString());
+                log.info("Auth:" + callDataRecord);
                 CallDataRecordPlusDto cdrPlus = cdrPlusService.createCdrPlus(callDataRecord);
                 kafkaTemplate.send("topic2", cdrPlus);
             }
