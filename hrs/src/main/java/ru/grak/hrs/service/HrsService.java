@@ -26,12 +26,12 @@ public class HrsService {
 
     private int currentMonth = 1;
 
-    @KafkaListener(topics = "topic2", groupId = "group-id", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "hrs", groupId = "hrs-topic-default", containerFactory = "kafkaListenerContainerFactory")
     public void invoicing(CallDataRecordPlusDto cdrPlus) {
         log.info(cdrPlus.toString());
 
         var invoiceData = tarifficationService.createInvoice(cdrPlus, usedMinutes);
-        kafkaTemplate.send("topic2-reply", invoiceData);
+        kafkaTemplate.send("hrs-reply", invoiceData);
 
         int callMonth = extractMonthFromCallData(cdrPlus);
 

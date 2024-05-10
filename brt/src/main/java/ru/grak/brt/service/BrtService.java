@@ -36,7 +36,7 @@ public class BrtService {
 
     //TODO transactional
 
-    @KafkaListener(topics = "topic1", groupId = "topic-default", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "brt", groupId = "brt-topic-default", containerFactory = "kafkaListenerContainerFactory")
     public void processingAndSendingCallData(String data) {
 
         List<CallDataRecordDto> cdr = parseCallDataFromReceivedData(data);
@@ -53,12 +53,12 @@ public class BrtService {
             if (auth.isAuthorizedMsisdn(callDataRecord.getMsisdnFirst())) {
                 log.info("Auth:" + callDataRecord);
                 CallDataRecordPlusDto cdrPlus = cdrPlusService.createCdrPlus(callDataRecord);
-                kafkaTemplate.send("topic2", cdrPlus);
+                kafkaTemplate.send("hrs", cdrPlus);
             }
         }
     }
 
-    @KafkaListener(topics = "topic2-reply", groupId = "topic-default", containerFactory =
+    @KafkaListener(topics = "hrs-reply", groupId = "hrs-topic-reply-default", containerFactory =
             "costDataKafkaListenerContainerFactory")
     public void processingCostData(InvoiceDto invoiceData) {
         log.info(invoiceData.toString());
