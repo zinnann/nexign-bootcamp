@@ -60,6 +60,8 @@ services:
       - app-net
     volumes:
       - ./liquibase/changelog/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./liquibase/changelog/insert-clients.sql:/docker-entrypoint-initdb.d/insert-clients.sql
+      - ./liquibase/changelog/insert-tariffs.sql:/docker-entrypoint-initdb.d/insert-tariffs.sql
       - /var/lib/postgresql/data
     restart: always
 
@@ -72,6 +74,8 @@ services:
   #      - ./liquibase/changelog:/liquibase/boot/changelog
   #      - ./liquibase/changelog/db.changelog-master.xml:/liquibase/boot/db.changelog-master.xml
   #      - ./liquibase/changelog/init-db.sql:/liquibase/boot/init-db.sql
+  #      - ./liquibase/changelog/insert-clients.sql:/liquibase/boot/insert-clients.sql
+  #      - ./liquibase/changelog/insert-tariffs.sql:/liquibase/boot/insert-tariffs.sql
   #    depends_on:
   #      - database
 

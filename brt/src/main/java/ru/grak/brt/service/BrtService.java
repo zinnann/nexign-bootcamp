@@ -2,6 +2,8 @@ package ru.grak.brt.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,15 @@ import ru.grak.common.dto.CallDataRecordPlusDto;
 import ru.grak.common.dto.InvoiceDto;
 import ru.grak.common.enums.TypeCall;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +100,36 @@ public class BrtService {
         return LocalDate.
                 ofInstant(Instant.ofEpochSecond(dateTimeStartCall), ZoneOffset.UTC)
                 .getMonthValue();
+    }
+
+    //test
+    @EventListener(ApplicationReadyEvent.class)
+    public void testAuthentication() throws IOException {
+
+        String cdrFileName = "brt/data/cdr.txt";
+
+        var data = Files.lines(Paths.get(cdrFileName))
+                .collect(Collectors.joining("\n"));
+
+        processingAndSendingCallData(data);
+    }
+
+    public List<CallDataRecordDto> getAuthorizedCallDataRecord() throws IOException {
+        String cdrFileName = "brt/data/cdr.txt";
+
+        var data = Files.lines(Paths.get(cdrFileName))
+                .collect(Collectors.joining("\n"));
+
+        List<CallDataRecordDto> cdr = parseCallDataFromReceivedData(data);
+        List<CallDataRecordDto> authorizedCdr = new ArrayList<>();
+
+        for (CallDataRecordDto callDataRecord : cdr) {
+
+            if (auth.isAuthorizedMsisdn(callDataRecord.getMsisdnFirst())) {
+                authorizedCdr.add(callDataRecord);
+            }
+        }
+        return authorizedCdr;
     }
 
 }
