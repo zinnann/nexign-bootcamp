@@ -26,6 +26,6 @@ public enum TypeCall {
             return INCOMING;
         }
 
-        throw new TypeNotFoundException("Doesn't exist this type");
+        throw new TypeNotFoundException("Doesn't exist this type: " + numericValueOfType);
     }
 }

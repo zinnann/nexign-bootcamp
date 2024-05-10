@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   zookeeper:
@@ -96,7 +96,7 @@ services:
   brt:
     image: graksergey/spring-boot-brt:latest
     restart: always
-    container_name: brt
+    container_name: brtt
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
