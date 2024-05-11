@@ -6,6 +6,7 @@ import ru.grak.brt.entity.Client;
 import ru.grak.brt.repository.ClientRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,5 +30,11 @@ public class BalanceService {
         client.setBalance(updatedBalance);
 
         clientRepository.save(client);
+    }
+    public void printAllBalances() {
+        List<Client> clients = clientRepository.findAll();
+        for (Client client : clients) {
+            System.out.println("Баланс абонента с номером " + client.getPhoneNumber() + " составляет: " + client.getBalance());
+        }
     }
 }

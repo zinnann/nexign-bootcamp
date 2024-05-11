@@ -53,7 +53,7 @@ public class BrtService {
 
             if (callMonth > currentMonth) {
                 currentMonth = callMonth;
-                autoUpdatingDataService.autoChangeBalanceAndTariff();
+//                autoUpdatingDataService.autoChangeBalanceAndTariff();
             }
 
             if (auth.isAuthorizedMsisdn(callDataRecord.getMsisdnFirst())) {
